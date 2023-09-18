@@ -4,21 +4,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\AuthController;
 
 
 
-Route::get('/', function(){
-    return response()->json([
-        'success' =>  true
-    ]);
-});
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
 
-Route::apiResource('sellers', SellerController::class);
-Route::apiResource('sales', SaleController::class);
-Route::get('sales/seller/{seller}', [SaleController::class, 'showBySeller']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('sellers', SellerController::class);
+    Route::apiResource('sales', SaleController::class);
+    Route::get('sales/seller/{seller}', [SaleController::class, 'showBySeller']);
 
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
