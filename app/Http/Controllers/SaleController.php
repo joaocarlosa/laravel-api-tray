@@ -41,9 +41,7 @@ class SaleController extends Controller
 
     public function destroy($id)
     {
-        $sale = Sale::findOrFail($id);
-        $sale->delete();
-        return response()->json(['message' => 'Deleted successfully'], 200);
+        return $this->sendResponse(Sale::findOrFail($id)->delete(), 'Deleted successfully');
     }
 
     public function showBySeller($seller_id)
