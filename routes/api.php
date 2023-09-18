@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\EmailController;
 
 
 Route::post('login', [AuthController::class, 'login']);
@@ -15,6 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sellers', SellerController::class);
     Route::apiResource('sales', SaleController::class);
     Route::get('sales/seller/{seller}', [SaleController::class, 'showBySeller']);
+
+    Route::get('/summary-email', [EmailController::class, 'sendSummaryEmail']);
+
 
     Route::get('/user', function (Request $request) {
         return $request->user();
