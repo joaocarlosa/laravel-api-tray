@@ -1,7 +1,9 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Models\Seller;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -9,24 +11,36 @@ class SellerControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
     public function testIndex()
     {
         $sellers = Seller::factory()->count(3)->create();
-        $response = $this->get('/sellers');
-        $response->assertStatus(200);
-        $response->assertJsonCount(3, 'data');
+
+        $this->actingAs($this->user)
+            ->get('/sellers')
+            ->assertStatus(200)
+            ->assertJsonCount(3, 'data');
     }
 
     public function testShow()
     {
         $seller = Seller::factory()->create();
-        $response = $this->get("/sellers/{$seller->id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'id' => $seller->id,
-            'name' => $seller->name,
-            'email' => $seller->email,
-        ]);
+
+        $this->actingAs($this->user)
+            ->get("/sellers/{$seller->id}")
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id' => $seller->id,
+                'name' => $seller->name,
+                'email' => $seller->email,
+            ]);
     }
 
     public function testStore()
@@ -36,8 +50,10 @@ class SellerControllerTest extends TestCase
             'email' => 'john@example.com',
         ];
 
-        $response = $this->post('/sellers', $data);
-        $response->assertStatus(201);
+        $this->actingAs($this->user)
+            ->post('/sellers', $data)
+            ->assertStatus(201);
+
         $this->assertDatabaseHas('sellers', $data);
     }
 
@@ -50,19 +66,22 @@ class SellerControllerTest extends TestCase
             'email' => 'jane@example.com',
         ];
 
-        $response = $this->put("/sellers/{$seller->id}", $data);
+        $this->actingAs($this->user)
+            ->put("/sellers/{$seller->id}", $data)
+            ->assertStatus(200);
 
-        $response->assertStatus(200);
         $this->assertDatabaseHas('sellers', $data);
     }
 
     public function testDestroy()
     {
         $seller = Seller::factory()->create();
-        $response = $this->delete("/sellers/{$seller->id}");
 
-        $response->assertStatus(200);
-        $response->assertJson(['message' => 'Deleted successfully']);
+        $this->actingAs($this->user)
+            ->delete("/sellers/{$seller->id}")
+            ->assertStatus(200)
+            ->assertJson(['message' => 'Deleted successfully']);
+
         $this->assertDatabaseMissing('sellers', ['id' => $seller->id]);
     }
 }
