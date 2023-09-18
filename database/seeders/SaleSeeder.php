@@ -12,7 +12,7 @@ class SaleSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(SaleSeeder::class);
+        Sale::factory(50)->create();
     }
 }
 
