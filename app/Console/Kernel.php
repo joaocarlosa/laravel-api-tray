@@ -12,7 +12,18 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $sellers = Seller::all();
+
+            foreach ($sellers as $seller) {
+                $salesToday = $seller->sales()->whereDate('created_at', today())->get();
+                $totalSales = $salesToday->sum('value');
+                $totalCommission = $salesToday->sum('commission');
+
+                Mail::to($seller->email)->send(new SalesSummary($totalSales, $totalCommission));
+            }
+        })->daily();
+
     }
 
     /**
