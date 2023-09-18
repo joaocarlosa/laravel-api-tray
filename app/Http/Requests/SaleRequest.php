@@ -19,19 +19,13 @@ class SaleRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules()
     {
-        $rules = [
+        return [
+            'seller_id' => $this->isMethod('post') ? 'required|exists:sellers,id' : 'sometimes|exists:sellers,id',
             'value' => 'required|numeric',
+            'sale_date' => $this->isMethod('post') ? 'required|date' : 'sometimes|date',
         ];
-
-        if ($this->isMethod('post')) {
-            $rules += [
-                'seller_id' => 'required|exists:sellers,id',
-                'sale_date' => 'required|date',
-            ];
-        }
-
-        return $rules;
     }
+
 }
