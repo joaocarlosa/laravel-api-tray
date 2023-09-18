@@ -15,6 +15,7 @@ Route::get('/', function(){
 
 Route::apiResource('sellers', SellerController::class);
 Route::apiResource('sales', SaleController::class);
+Route::get('sales/seller/{seller}', [SaleController::class, 'showBySeller']);
 
 
 
