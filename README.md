@@ -1,66 +1,299 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Instalação
+```sh
+git clone https://github.com/joaocarlosa/laravel-api-tray.git
+```
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+```sh
 
-## About Laravel
+./vendor/bin/sail up -d
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```sh
+./vendor/bin/sail exec laravel.test bash
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```sh
+composer install
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+Gere a key do projeto Laravel
+```sh
+php artisan key:generate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Autenticação
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Todos os endpoints, exigem autenticação por meio de Bearer Token que deve ser enviado no header da requisição.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Endpoints
 
-## Laravel Sponsors
+### Users
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Cria um novo usuário.
 
-### Premium Partners
+Endpoint: POST `/register`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```sh
+curl -X POST -H "Content-Type: application/json" -d
+'{
+    "name": "John Doe",
+    "email": "user@email.com",
+    "password": "password",
+    "password_confirmation": "password"
+}'
+http://localhost:8000/register
 
-## Contributing
+```
+Retorno:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```json
+{
+"data": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "user@email.com",
+    "created_at": "2023-09-19T19:25:32.000000Z",
+    "updated_at": "2023-09-19T19:25:32.000000Z"
+}
+}
+```
 
-## Code of Conduct
+### Login na api
+Endpoint para logar na aplicação, seu retorno será o Bearer Token
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Endpoint: GET `/login`
 
-## Security Vulnerabilities
+```sh
+curl -X POST -H "Content-Type: application/json" -d
+http://localhost:8000/login
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+Retorno:
 
-## License
+```json
+{
+	"token": "1|M4z4XVTqLZlmHR1gcSF4YRwxlvUyqaMzpxl4KDOJ00d67d78"
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Sales:
+
+Recuperar todas as vendas
+Endpoint: GET `/api/sales`
+
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/sales
+
+```
+
+Retorno:
+
+```json
+{
+"data": [
+    {
+        "id": 7,
+        "seller_id": 27,
+        "value": "620.70",
+        "commission": "52.76",
+        "sale_date": "1971-07-05"
+    },
+    {
+        "id": 8,
+        "seller_id": 28,
+        "value": "889.35",
+        "commission": "41.12",
+        "sale_date": "2007-12-28"
+    },
+]}
+
+```
+
+### Recuperar as vendas de um vendedor
+Endpoint: GET `/api/sale/seller/{id}`
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/sale/seller/$ID
+
+```
+
+### Criar uma nova venda
+Endpoint: POST `/api/sale`
+
+```sh
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer seu_token_aqui" -d
+'{
+  "seller_id": 1,
+  "value": 1000.50,
+  "sale_date": "2023-09-15"
+}'
+http://localhost/sale
+
+```
+
+### Atualizar uma venda existente
+Endpoint: PUT `/sales/{id}`
+
+```sh
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer seu_token_aqui" -d
+'{
+  "value": 900.75
+}'
+http://localhost:8000/sales/$ID
+
+```
+Retornos de GET, POST e PUT:
+
+```json
+{
+"data": {
+    "id": 1,
+    "seller_id": 1,
+    "value": 900.75,
+    "commission": 76.56375,
+    "sale_date": "2023-09-18"
+}
+}
+
+```
+
+### Remover uma venda
+Endpoint: DELETE `/sales/{id}`
+
+```sh
+curl -X DELETE -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/sales/$ID
+
+```
+
+Retorno:
+
+```json
+{
+{
+"success": true,
+"data": true,
+"message": "Deleted successfully"
+}
+}
+```
+
+
+#### Sellers:
+
+Recuperar todas os vendedores
+Endpoint: GET `/api/sellers`
+
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/sellers
+
+```
+
+Retorno:
+
+```json
+{
+"data": [{
+        "id": 3,
+        "name": "Lilly Jenkins",
+        "email": "allie51@example.com",
+        "created_at": "2023-09-18T17:44:20.000000Z",
+        "updated_at": "2023-09-18T17:44:20.000000Z"
+    },
+    {
+        "id": 4,
+        "name": "Salvador West Jr.",
+        "email": "schneider.jaunita@example.org",
+        "created_at": "2023-09-18T17:44:20.000000Z",
+        "updated_at": "2023-09-18T17:44:20.000000Z"
+    }]
+}
+
+```
+
+### Recuperar um vendedor
+Endpoint: GET `/api/sale/seller/{id}`
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/seller/$ID
+
+```
+
+### Criar um novo vendedor
+Endpoint: POST `/api/seller`
+
+```sh
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer seu_token_aqui" -d
+'{
+    "name": "John Doe",
+    "email": "user@email.com"
+}'
+http://localhost/seller
+
+```
+
+### Atualizar um vendedor existente
+Endpoint: PUT `/seller/{id}`
+
+```sh
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer seu_token_aqui" -d
+'{
+    "name": "John Doe",
+    "email": "user@email.com"
+}'
+http://localhost:8000/seller/$ID
+
+```
+Retornos de GET, POST e PUT:
+
+```json
+{
+"data": {
+    "id": 1,
+    "name": "Yasmeen Gislason",
+    "email": "gus8@example.com",
+    "created_at": "2023-09-18T17:44:20.000000Z",
+    "updated_at": "2023-09-18T17:44:20.000000Z"
+}
+}
+
+```
+
+
+### Enviar email com resumo de vendas do dia
+Endpoint: GET `/summary-email`
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/summary-email
+
+```
+
+
+### Enviar email para o administrador
+Endpoint: GET `/send-admin-sales`
+
+```sh
+curl -X GET -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/send-admin-sales
+
+```
+
+
+### Renviar email com vendas de um vendedor
+Endpoint: POST `/resend-summary-email/<id>`
+
+```sh
+curl -X POST -H "Authorization: Bearer seu_token_aqui"
+http://localhost:8000/resend-summary-email/1
+
+```
+
+
